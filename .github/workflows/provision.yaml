@@ -1,0 +1,49 @@
+name: Apply terraform
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  apply:
+    name: Apply the gator terraform
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          # terraform_version: 0.13.0
+          cli_config_credentials_token: ${{ secrets.TF_TOKEN }}
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Check env var
+        run: echo $TF_VAR_DO_DOMAIN
+        
+        # Replace the caddy server every time to force reconfigure
+        # this is a stop gap until config is extracted from IaC
+        # NOTE: splat replace currently not supported, https://github.com/hashicorp/terraform/issues/30350
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false -replace=digitalocean_droplet.bootstrap
+        env:
+          TF_VAR_DO_TOKEN: ${{ secrets.TF_VAR_DO_TOKEN }}
+          TF_VAR_SSH_KEY: ${{ secrets.TF_VAR_SSH_KEY }}
+
+      - name: Terraform output
+        run: terraform output
+
+
+      
