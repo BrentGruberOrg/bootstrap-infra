@@ -42,12 +42,6 @@ resource "digitalocean_firewall" "bootstrap" {
     source_addresses = ["0.0.0.0/0", "::/0"]
   }
 
-  inbound_rule {
-    protocol          = "k3s"
-    port_range        = "6443"
-    source_addresses  = ["0.0.0.0/0", "::/0"]
-  }
-
   outbound_rule {
     protocol              = "tcp"
     port_range            = "1-65535"
