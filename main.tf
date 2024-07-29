@@ -13,6 +13,7 @@ resource "digitalocean_droplet" "bootstrap" {
   ]
 }
 
+
 resource "digitalocean_firewall" "bootstrap" {
   name = "only-allow-ssh-http-and-https"
 
